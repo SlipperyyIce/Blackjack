@@ -3,7 +3,7 @@ import Blackjack from './components/Blackjack.vue'
 </script>
 
 <template>
-  <h1>Hello World</h1>
+  <h1 class="text-center text-white">Hello World</h1>
   
   <Blackjack/>
 </template>
