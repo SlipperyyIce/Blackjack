@@ -4,7 +4,7 @@
   <div id ='table' class="table">
     <div class="hand">
     <span v-for="(card,i) in dealerCards">
-      <img :src="card.image" class='dealer_img' :id="i" :style="{'z-index': 100 - i}"/>
+      <img :src="card.image" class='dealer_img' :id=i.toString() :style="{'z-index': 100 - i}"/>
     </span>
   </div>
   <div class="hand">
@@ -40,20 +40,27 @@
 </template>
 
 <script lang="ts">
-import $ from 'jquery'
 import { defineComponent } from 'vue'
+
+
+interface card {
+	value: string;
+  suit: string;
+  image: string;
+	
+}
     export default defineComponent({
       data() {
         return {
           
-          deck: [],
-          playerCards: [],
-          dealerCards: [],
+          deck: new Array<card>(),
+          playerCards: new Array<card>(),
+          dealerCards: new Array<card>(),
           playerScore: 0,
           dealerScore: 0,
           loop_i: 0,
           disable: false,
-          timeouts:[],
+          timeouts: new Array<NodeJS.Timeout>(),
           music_active: "Off",
           bgMusic: document.createElement("audio"),
           
@@ -65,7 +72,7 @@ import { defineComponent } from 'vue'
           if(!this.disable) this.giveCard(true);
         },
 
-        Won(i){
+        Won(i: number){
           this.disable = true;
          
           switch (i){
@@ -89,7 +96,7 @@ import { defineComponent } from 'vue'
         stand() {
           if(!this.disable){
             this.disable = true;
-            this.showHidden(1);
+            this.showHidden();
             
             if(this.dealerScore < 17)this.Loop();
           }
@@ -118,13 +125,17 @@ import { defineComponent } from 'vue'
           this.timeouts.push(t);
         },
 
-        giveCard(isplayer) {
+        giveCard(isplayer: boolean) {
           if (isplayer){
-            this.playerCards.push(this.deck.pop());
+            let card = this.deck.pop();
+            if(card?.value) this.playerCards.push(card);
+            
             this.updateScore();
           }
           else {
-            this.dealerCards.push(this.deck.pop());
+            let card = this.deck.pop();
+            if(card?.value) this.dealerCards.push(card);
+
             if(this.dealerCards.length == 2){
               this.dealerCards[1].image = '../images/FaceDown.png';
               
@@ -135,16 +146,21 @@ import { defineComponent } from 'vue'
         },
 
         //Reveals the hidden card
-        showHidden(i){
+        showHidden(){
+          let i = 1;
           let img_loc = '../images/';
           img_loc = img_loc.concat(this.dealerCards[i].value, this.dealerCards[i].suit,".png");
           
-          document.getElementById('1').className += ' reveal';
+            const el = document.getElementById('1');
+            if (el?.className) {
+              el.className += ' reveal';
+            }
+                  
           setTimeout( ()=> {this.dealerCards[i].image = img_loc; this.updateScore();},500);
         },
         
         // Calculate the score for a hand of cards
-        calculateScore(cards) {
+        calculateScore(cards: Array<card>) {
           var score = 0;
           var hasAce = false;
           for (var i = 0; i < cards.length; i++) {
@@ -222,12 +238,12 @@ import { defineComponent } from 'vue'
             for (var i2 = 0; i2 < cardSuits.length; i2++) {
               let img_loc = '../images/';
               img_loc = img_loc.concat(cardValues[i],cardSuits[i2],".png")
-              var card = {
+              var card: card = {
                 value: cardValues[i],
                 suit: cardSuits[i2],
-                image: img_loc,
-                
+                image: img_loc,                
               };
+
               this.deck.push(card);
               
           
