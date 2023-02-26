@@ -32,7 +32,7 @@ body {
   min-height: 100vh;
   background-color: #242424!important;
   height: 1200px;
-  width: 1096px;
+  max-width: 1096px;
   margin-left: auto!important;
   margin-right: auto!important;
 }

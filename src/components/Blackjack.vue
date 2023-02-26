@@ -29,42 +29,24 @@
  
     </div>
     <button v-on:click="toggleMusic">Background Music: {{ music_active }}</button>
+    <!-- Button trigger modal -->
 
-    <div class="modal" tabindex="-1" role="dialog" id="myModal">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Modal title</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <p>Modal body text goes here.</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary">Save changes</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
     
 
   </div>
  
 </div>
+
 </template>
 
 <script lang="ts">
-
+import $ from 'jquery'
 import { defineComponent } from 'vue'
     export default defineComponent({
       data() {
         return {
-          cardValues: ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"],
-          cardSuits: ["Hearts", "Diamonds", "Clubs", "Spades"],
-          deck: [{ }],
+          
+          deck: [],
           playerCards: [],
           dealerCards: [],
           playerScore: 0,
@@ -85,19 +67,18 @@ import { defineComponent } from 'vue'
 
         Won(i){
           this.disable = true;
-
-          
+         
           switch (i){
             case -1:
-              alert("U LOSE");
+              alert("You lost :(");
               break;
 
             case 0:
-              alert()
+              alert("Tie")
               break;
 
             case 1:
-              alert()
+            alert("You Won :)")
               break;
           
           }
@@ -118,7 +99,7 @@ import { defineComponent } from 'vue'
         Loop() {         
           let t = setTimeout(()=> {  
             
-            if(this.dealerScore > 17){ 
+            if(this.dealerScore >= 17){ 
 
               if(this.dealerScore >21)this.Won(1);  //Dealer bust
               else if(this.playerScore == this.dealerScore) this.Won(0); //Blackjack draw
@@ -185,6 +166,7 @@ import { defineComponent } from 'vue'
 
         // Update the score and check for a win
         updateScore() {
+          this.disable = true;
           this.playerScore = this.calculateScore(this.playerCards);
           if(this.dealerCards.length == 2){
             if(this.dealerCards[1].image == '../images/FaceDown.png'){                
@@ -192,12 +174,12 @@ import { defineComponent } from 'vue'
             else this.dealerScore = this.calculateScore(this.dealerCards);                      
           }
           else this.dealerScore = this.calculateScore(this.dealerCards);
-          
-          
-             
+          setTimeout(()=> this.disable = false,1000)
+          setTimeout(()=> {if(this.playerScore > 21)  this.Won(-1);},1000)
+          setTimeout(()=> {if(this.playerScore == 21) this.stand();},1000)   
                     
-          if(this.playerScore > 21)  this.Won(-1); //Player bust
-          if(this.playerScore == 21) this.stand();
+          
+          
    
           
         },
@@ -234,30 +216,36 @@ import { defineComponent } from 'vue'
 
         start(){
           // Create a deck of cards
-          for (var i = 0; i < this.cardValues.length; i++) {
-            for (var i2 = 0; i2 < this.cardSuits.length; i2++) {
+          let cardValues = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"];
+          let cardSuits = ["Hearts", "Diamonds", "Clubs", "Spades"];
+          for (var i = 0; i < cardValues.length; i++) {
+            for (var i2 = 0; i2 < cardSuits.length; i2++) {
               let img_loc = '../images/';
-              img_loc = img_loc.concat(this.cardValues[i],this.cardSuits[i2],".png")
+              img_loc = img_loc.concat(cardValues[i],cardSuits[i2],".png")
               var card = {
-                value: this.cardValues[i],
-                suit: this.cardSuits[i2],
+                value: cardValues[i],
+                suit: cardSuits[i2],
                 image: img_loc,
                 
               };
               this.deck.push(card);
-              console.log(card);
+              
           
             }
           }
           
           // Shuffle the deck
+          
           for (var i = 0; i < this.deck.length; i++) {
-            var j = Math.floor(Math.random() * this.deck.length);
-            var temp = this.deck[i];
+            let j = Math.floor(Math.random() * this.deck.length);
+            
+            let temp = this.deck[i];
             this.deck[i] = this.deck[j];
             this.deck[j] = temp;
+            
           }
-          this.disable = true;
+          
+          this.disable = true;   
 
           let t = setTimeout( ()=> this.giveCard(true),500);
           this.timeouts.push(t);
@@ -267,7 +255,7 @@ import { defineComponent } from 'vue'
           this.timeouts.push(t);
           t = setTimeout( ()=> this.giveCard(false),3500);
           this.timeouts.push(t); 
-          t =setTimeout( ()=> this.disable = false,4000);
+          t =setTimeout( ()=> this.disable = false,4500);
           this.timeouts.push(t);
           
         }
