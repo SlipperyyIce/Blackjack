@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import Blackjack from './components/Blackjack.vue'
+import NavB from './components/NavBar.vue'
+import foot from './components/Footer.vue'
 </script>
 
-<template>
-  <h1 class="text-center text-white">Hello World</h1>
-  
+<template>  
+  <NavB/>
   <Blackjack/>
+  <foot/>
 </template>
 
 <style scoped>
